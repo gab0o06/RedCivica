@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-civica-navy: #234467;
+  --color-civica-navy-hover: #19324d;
+  --color-civica-orange: #c25617;
+  --color-civica-orange-hover: #a34510;
+  --color-civica-sage: #2d6a52;
+  --color-civica-sage-light: #e8f3ee;
+  --color-civica-hero: #edf2ee;
+  --color-civica-bg: #f5f7f8;
+  --color-civica-ink: #182230;
+}
+
+@layer base {
+  html {
+    font-size: 16px; /* Garantiza mínimo 16px en todo el sitio */
+    background-color: var(--color-civica-bg);
+    color: var(--color-civica-ink);
+  }
+}
