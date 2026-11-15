@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import HomePage from "./pages/Home";
@@ -17,7 +17,9 @@ export default function App() {
 
           <main className="flex-1">
             <Routes>
+              {/* Portada completa */}
               <Route path="/" element={<HomePage />} />
+
               {/* Vista directa de votación ciudadana */}
               <Route
                 path="/propuestas"
@@ -41,6 +43,28 @@ export default function App() {
                   />
                 }
               />
+
+              {/* Detalle de propuesta y checklist */}
+              <Route
+                path="/propuestas/:id"
+                element={<PropuestaDetallePage />}
+              />
+
+              {/* Autenticación */}
+              <Route path="/auth" element={<Auth />} />
+
+              {/* Rutas protegidas */}
+              <Route
+                path="/propuestas/nueva"
+                element={
+                  <ProtectedRoute>
+                    <CrearPropuestaPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Redirección por defecto */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
         </div>
