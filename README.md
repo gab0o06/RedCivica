@@ -1,240 +1,220 @@
 # Red Cívica 🏙️
 
-> **Plataforma de Organización y Acción Vecinal en Barrios de Quito**  
-> Convierte las necesidades de la comunidad en obras y soluciones tangibles mediante votación democrática, desbloqueo de rutas de gestión ciudadana y checklists colaborativos con evidencia fotográfica y documental.
+> **Donde la organización vecinal se convierte en obras y soluciones.**
+> Plataforma web para barrios de Quito: los vecinos proponen mejoras, votan (1 vecino = 1 voto) y, al llegar a la meta, se desbloquea una **Ruta de Acción** colaborativa con pasos, responsables y evidencia verificable.
+
+**Demo en línea:** https://redcivica.netlify.app
+
+**EagleDev 2026 · Categoría Contemporáneo · Nivel Universidades · ODS 10 (meta 10.2)**
+**Equipo:** Team Error404 (Lukas Bustamante, Mateo Hidalgo, Sheldon López) · **IES:** Universidad de Las Américas (UDLA) · **Tutor:** Santiago Solórzano
+**Documentación:** [Declaración de uso de IA](docs/declaracionIA.md) · [Pruebas de seguridad](docs/pruebasSeguridad.md) · [Arquitectura y datos](docs/arquitectura-y-datos.md)
 
 ---
 
-## 📋 Tabla de Contenidos
+## 📋 Contenido
 
-1. [Descripción General](#-descripción-general)
-2. [Características Principales](#-características-principales)
-3. [Stack Tecnológico](#-stack-tecnológico)
-4. [Estructura del Proyecto](#-estructura-del-proyecto)
-5. [Instalación y Configuración](#-instalación-y-configuración)
-6. [Variables de Entorno](#-variables-de-entorno)
-7. [Base de Datos y Almacenamiento (Supabase)](#-base-de-datos-y-almacenamiento-supabase)
-8. [Flujo de Usuario](#-flujo-de-usuario)
-9. [Buenas Prácticas y Criterios de Mantenibilidad](#-buenas-prácticas-y-criterios-de-mantenibilidad)
-
----
-
-## 🌟 Descripción General
-
-**Red Cívica** es una plataforma web desarrollada para fomentar la participación ciudadana en los barrios de Quito (como La Tola, La Floresta, Mariscal/El Ejido, Chimbacalle, Quitumbe, Carcelén, Cotocollao y San Roque). 
-
-Permite que cualquier vecino proponga una mejora comunitaria en áreas como Infraestructura, Seguridad, Movilidad o Eventos. Cuando la comunidad apoya la causa alcanzando la meta de firmas/votos (*"1 Vecino = 1 Voto"*), la propuesta pasa de **En Votación** a **En Gestión**, desbloqueando una **Ruta de Acción Colaborativa**. Mediante un checklist público, los vecinos pueden autoasignarse tareas, ejecutar gestiones ante las autoridades y subir evidencia verificable (fotos o PDFs) hasta que la obra sea **Completada**.
+- [Red Cívica 🏙️](#red-cívica-️)
+  - [📋 Contenido](#-contenido)
+  - [🎯 Problema y ODS](#-problema-y-ods)
+  - [✨ Qué hace la plataforma](#-qué-hace-la-plataforma)
+  - [🔄 Flujo de usuario](#-flujo-de-usuario)
+  - [🛠️ Stack y arquitectura](#️-stack-y-arquitectura)
+  - [📁 Estructura del proyecto](#-estructura-del-proyecto)
+  - [🗄️ Base de datos y almacenamiento](#️-base-de-datos-y-almacenamiento)
+  - [🔐 Seguridad](#-seguridad)
+  - [🧪 Pruebas](#-pruebas)
+  - [🚀 Instalación y configuración](#-instalación-y-configuración)
+  - [🤖 Uso de IA generativa](#-uso-de-ia-generativa)
+  - [🧭 Limitaciones y trabajo futuro](#-limitaciones-y-trabajo-futuro)
 
 ---
 
-## ✨ Características Principales
+## 🎯 Problema y ODS
 
-- **Democracia Barrial (1 Vecino = 1 Voto):** Control de votaciones para evitar duplicidad de votos por usuario.
-- **Transición Dinámica de Estados:**
-  - `En Votación`: Fase inicial para reunir el apoyo comunitario necesario.
-  - `En Gestión`: Ruta de acción desbloqueada con checklist de pasos secuenciales o paralelos.
-  - `Completada`: Obra o trámite finalizado con registro histórico y evidencia pública.
-- **Ruta de Acción Colaborativa (Checklist Vecinal):**
-  - Reclamo atómico de pasos para evitar colisiones entre vecinos.
-  - Posibilidad de liberar pasos asignados si el voluntario no puede completarlos.
-  - Carga de evidencias fotográficas o comprobantes PDF (máx. 5 MB) almacenados en Supabase Storage.
-- **Filtrado y Búsqueda en Tiempo Real:** Filtros por estado de propuesta y búsqueda por nombre de barrio o palabras clave del proyecto.
-- **Autenticación con Perfil Barrial:** Registro seguro asociando a cada vecino a su sector de residencia.
+Los barrios saben qué necesitan, pero muchas veces no saben cómo conseguirlo: los trámites se rechazan por errores de forma y los presupuestos participativos no se ejecutan. Pagan el costo las comunidades con menos recursos y menos acceso a información.
 
----
+Red Cívica conecta dos cosas que hoy están separadas: la **organización vecinal** y la **burocracia**. Se alinea con el **ODS 10 (Reducción de las desigualdades), meta 10.2**: promover la inclusión social y política de todas las personas.
 
-## 🛠️ Stack Tecnológico
+## ✨ Qué hace la plataforma
 
-- **Frontend:** [React 19](https://react.dev/) + [Vite 8](https://vitejs.dev/)
-- **Estilos:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Enrutamiento:** [React Router DOM v7](https://reactrouter.com/)
-- **Backend as a Service:** [Supabase](https://supabase.com/)
-  - Autenticación (Supabase Auth)
-  - Base de Datos Relacional (PostgreSQL)
-  - Almacenamiento de Archivos (Supabase Storage)
-- **Calidad de Código y Linting:** ESLint 10 con reglas de React Compiler, React Hooks y Fast Refresh.
+- **1 vecino = 1 voto.** El voto único está garantizado en la base de datos con una restricción `UNIQUE`.
+- **Estados automáticos.** `En Votación` → `En Gestión` → `Completada`, controlados por triggers de PostgreSQL.
+- **Ruta de Acción colaborativa.** Al alcanzar la meta de votos se crean los pasos del trámite. Cada vecino puede reclamar un paso, liberarlo y completarlo subiendo una foto o PDF (máx. 5 MB) como evidencia. El reclamo es atómico, para evitar que dos vecinos tomen el mismo paso.
+- **Progreso calculado** a partir de los pasos completados, no guardado como un número suelto.
+- **Perfil barrial.** Cada vecino se registra asociado a su sector; el perfil lo crea la base de datos al registrarse.
+- **Filtros** por estado de la propuesta y búsqueda por barrio o palabra clave.
+- **Diseño móvil y accesible:** tipografía legible, alto contraste y textos simples.
 
----
+## 🔄 Flujo de usuario
 
-## 📁 Estructura del Proyecto
+1. El vecino se registra o inicia sesión.
+2. Explora las propuestas de su barrio o crea una nueva (nace en `En Votación`).
+3. Los vecinos votan. Al llegar a la meta (200 votos) la propuesta pasa a `En Gestión` y se genera su Ruta de Acción.
+4. Los vecinos reclaman pasos, realizan la gestión y suben evidencia.
+5. Cuando todos los pasos están completados, la propuesta pasa a `Completada`.
 
-El proyecto sigue una arquitectura modular orientada a componentes desacoplados, separación de lógica de negocio y constantes centralizadas:
+## 🛠️ Stack y arquitectura
+
+| Capa | Tecnología |
+|---|---|
+| Frontend | React 19 + Vite 8 |
+| Estilos | Tailwind CSS v4 |
+| Enrutamiento | React Router DOM v7 |
+| Backend (BaaS) | Supabase: Auth, PostgreSQL con RLS y triggers, Storage |
+| Despliegue | Netlify |
+| Calidad | ESLint 10 (React Hooks, React Compiler, Fast Refresh) y pruebas unitarias |
+
+Las páginas no hablan directamente con Supabase: pasan por una **capa de servicios**. Las reglas críticas (voto único, cambios de estado, permisos) viven en la **base de datos**, no en el navegador.
+
+```mermaid
+flowchart TB
+    subgraph Cliente["Frontend (React 19 + Vite 8 + Tailwind CSS v4)"]
+        UI["Páginas UI<br/>(Home, PropuestaDetalle, CrearPropuesta, Auth)"]
+        Ctx["AuthContext y useAuth<br/>(sesión y perfil barrial)"]
+        Srv["Capa de servicios<br/>(propuestas, votos, rutas)"]
+        UI --> Ctx
+        UI --> Srv
+    end
+
+    Netlify["Netlify<br/>(rewrites SPA en netlify.toml)"]
+
+    subgraph Backend["Supabase (BaaS)"]
+        Auth["Supabase Auth<br/>(JWT, correo y contraseña)"]
+        DB[("PostgreSQL<br/>RLS + triggers + constraints")]
+        Storage[("Supabase Storage<br/>bucket evidencias, 5 MB máx.")]
+    end
+
+    Netlify -.->|sirve| Cliente
+    Ctx <--> Auth
+    Srv <--> DB
+    Srv <--> Storage
+    Auth -. "trigger: on_auth_user_created" .-> DB
+```
+
+## 📁 Estructura del proyecto
 
 ```text
-├── public/                 # Favicon y assets públicos
+├── docs/                    # Declaración de IA, pruebas de seguridad, arquitectura
+├── supabase/                # Scripts SQL: tablas, triggers, RLS y endurecimiento
+├── public/                  # Favicon y assets públicos
 ├── src/
-│   ├── assets/             # Imágenes e ilustraciones (hero, logos)
-│   ├── components/         # Componentes UI modulares y reutilizables
-│   │   ├── ChecklistRuta.jsx    # Checklist de tareas vecinales y subida de evidencia
-│   │   ├── EstadoBadge.jsx      # Badges visuales de estado (propuestas y pasos)
-│   │   ├── HeroBanner.jsx       # Banner principal de bienvenida y llamada a la acción
-│   │   ├── Navbar.jsx           # Barra de navegación principal y estado de sesión
-│   │   ├── ProgressBar.jsx      # Barra de progreso configurable (porcentaje, color, tamaño)
-│   │   ├── PropuestaCard.jsx    # Tarjeta de resumen de propuesta vecinal
-│   │   └── ProtectedRoute.jsx   # Envoltorio para rutas que exigen autenticación
-│   ├── constants/          # Constantes y enumeraciones del dominio
-│   │   ├── barrios.js           # Lista oficial de barrios de Quito
-│   │   ├── index.js             # Punto de exportación unificado
-│   │   └── propuestas.js        # Estados (Propuesta, Paso), categorías y filtros
-│   ├── context/            # Contextos globales de React
-│   │   ├── authContext.js       # Definición atómica del contexto de autenticación
-│   │   └── AuthContext.jsx      # Proveedor (AuthProvider) con lógica de sesión
-│   ├── hooks/              # Custom hooks reutilizables
-│   │   └── useAuth.js           # Hook para consumir el contexto de autenticación
-│   ├── lib/                # Configuración de clientes externos
-│   │   └── supabase.js          # Inicialización del cliente Supabase
-│   ├── pages/              # Páginas / Vistas principales
-│   │   ├── Auth.jsx             # Inicio de sesión y registro de vecinos
-│   │   ├── CrearPropuesta.jsx   # Formulario para proponer una nueva mejora
-│   │   ├── Home.jsx             # Listado principal, filtros y métricas comunitarias
-│   │   └── PropuestaDetalle.jsx # Vista detallada y gestión de la ruta de acción
-│   ├── services/           # Capa de acceso a datos y llamadas a Supabase
-│   │   ├── propuestasService.js # Consultas y creación de iniciativas
-│   │   ├── rutasService.js      # Gestión de pasos de la ruta y subida de evidencias
-│   │   └── votosService.js      # Registro y consulta de votos por vecino
-│   ├── App.jsx             # Enrutador principal de la aplicación
-│   ├── main.jsx            # Punto de entrada de la aplicación React
-│   └── index.css           # Configuración de Tailwind CSS
-├── .env.example            # Plantilla de variables de entorno requeridas
-├── eslint.config.js        # Configuración de ESLint
-├── package.json            # Dependencias y scripts del proyecto
-└── vite.config.js          # Configuración del empaquetador Vite
+│   ├── assets/              # Imágenes e ilustraciones
+│   ├── components/          # ChecklistRuta, EstadoBadge, HeroBanner, Navbar,
+│   │                        # ProgressBar, PropuestaCard, ProtectedRoute
+│   ├── constants/           # Estados, categorías, filtros y barrios
+│   ├── context/             # authContext.js y AuthProvider
+│   ├── hooks/               # useAuth
+│   ├── lib/                 # Cliente de Supabase
+│   ├── pages/               # Auth, CrearPropuesta, Home, PropuestaDetalle
+│   ├── services/            # propuestasService, rutasService, votosService
+│   ├── utils/               # progreso.js (cálculo del porcentaje)
+│   ├── App.jsx              # Rutas con carga diferida (React.lazy)
+│   ├── main.jsx
+│   └── index.css
+├── test/                    # Pruebas unitarias
+├── .env.example             # Plantilla de variables de entorno
+├── netlify.toml             # Redirecciones SPA para React Router
+├── eslint.config.js
+├── package.json
+└── vite.config.js
 ```
 
----
+## 🗄️ Base de datos y almacenamiento
 
-## 🚀 Instalación y Configuración
+```mermaid
+erDiagram
+    PERFILES {
+        uuid id PK "igual a auth.users.id"
+        text nombre
+        text barrio
+        text rol "vecino por defecto, protegido por trigger"
+        timestamptz created_at
+    }
+    PROPUESTAS {
+        uuid id PK
+        text titulo
+        text descripcion
+        text barrio
+        text categoria
+        text estado "En Votación, En Gestión o Completada"
+        int votos_actuales "default 0"
+        int votos_meta "default 200"
+        uuid creador_id FK
+        timestamptz created_at
+    }
+    VOTOS {
+        uuid id PK
+        uuid usuario_id FK "UNIQUE con propuesta_id"
+        uuid propuesta_id FK
+        timestamptz created_at
+    }
+    PASOS_RUTA {
+        uuid id PK
+        uuid propuesta_id FK
+        int orden
+        text titulo
+        text estado "Pendiente, En curso o Completado"
+        uuid asignado_a FK
+        text evidencia_url "URL del bucket"
+        timestamptz updated_at
+    }
 
-### 1. Clonar el repositorio y navegar a la carpeta:
+    PERFILES ||--o{ PROPUESTAS : crea
+    PERFILES ||--o{ VOTOS : emite
+    PROPUESTAS ||--o{ VOTOS : recibe
+    PROPUESTAS ||--o{ PASOS_RUTA : "desbloquea al llegar a la meta"
+    PERFILES ||--o{ PASOS_RUTA : "reclama y ejecuta"
+```
+
+- `votos_actuales`, el estado de la propuesta y los pasos de la ruta los actualizan **triggers**, no el cliente.
+- **Storage:** bucket `evidencias` de lectura pública, limitado en el servidor a JPG, PNG, WEBP y PDF de hasta 5 MB.
+
+## 🔐 Seguridad
+
+La seguridad se aplica en el servidor (Row Level Security y triggers de PostgreSQL), no solo en la interfaz:
+
+- El **perfil** se crea con un trigger al registrarse y el **rol** no puede ser modificado por el usuario.
+- Al crear una propuesta, el servidor fija el estado, los votos, la meta y el creador.
+- Los **votos** son privados (cada usuario ve solo los suyos) y solo se aceptan en propuestas `En Votación`.
+- Un **paso** solo puede completarlo su responsable, con una evidencia válida del bucket; las transiciones de estado están restringidas.
+- El bucket de **evidencias** limita tipo y tamaño de archivo en el servidor.
+- El cliente usa únicamente la llave pública de Supabase; no hay claves secretas en el repositorio.
+
+## 🧪 Pruebas
+
+- **11 pruebas funcionales y de seguridad** ejecutadas con varias cuentas contra el proyecto real: escalada de privilegios, manipulación de propuestas, voto duplicado, aislamiento de votos, pasos ajenos, evidencia inválida, validación de archivos, estados automáticos y registro de usuarios. Resultados en [`docs/pruebasSeguridad.md`](docs/pruebasSeguridad.md).
+- **Pruebas unitarias** del cálculo de progreso: `npm test`.
+- **Linter** sin errores ni advertencias: `npm run lint`.
+
+## 🚀 Instalación y configuración
+
 ```bash
-git clone <url-del-repositorio>
-cd EagleDev
+git clone https://github.com/gab0o06/RedCivica.git
+cd RedCivica
+npm install            # o pnpm install
+cp .env.example .env   # completa tus credenciales de Supabase
+npm run dev            # http://localhost:5173
 ```
 
-### 2. Instalar dependencias:
-```bash
-# Con pnpm (recomendado)
-pnpm install
+Otros comandos: `npm run build`, `npm run lint`, `npm test`.
 
-# O con npm
-npm install
-```
-
-### 3. Configurar variables de entorno:
-Copia el archivo de plantilla `.env.example` a `.env`:
-```bash
-cp .env.example .env
-```
-Edita `.env` e introduce las credenciales de tu proyecto de Supabase.
-
-### 4. Ejecutar en entorno de desarrollo:
-```bash
-npm run dev
-```
-Abre tu navegador en `http://localhost:5173`.
-
-### 5. Compilar para producción:
-```bash
-npm run build
-```
-
-### 6. Ejecutar el linter:
-```bash
-npm run lint
-```
-
----
-
-## 🔐 Variables de Entorno
-
-El archivo `.env` requiere las siguientes claves públicas:
+**Variables de entorno**
 
 | Variable | Descripción |
 |---|---|
 | `VITE_SUPABASE_URL` | URL de la API del proyecto en Supabase (ej. `https://xxxx.supabase.co`) |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Llave anónima / pública (`anon` / `publishable`) de Supabase |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Llave pública (anon / publishable) de Supabase |
 
----
+**Base de datos:** ejecuta en el SQL Editor de Supabase los scripts de `supabase/` en orden numérico y crea el bucket público `evidencias`. En Authentication, desactiva "Confirm email" para la demo y configura la URL del sitio.
 
-## 🗄️ Base de Datos y Almacenamiento (Supabase)
+## 🤖 Uso de IA generativa
 
-El backend opera sobre PostgreSQL en Supabase con las siguientes entidades:
+Se utilizaron herramientas de IA generativa durante el desarrollo; el equipo revisó, ejecutó y probó el resultado. La declaración completa (herramientas, partes con apoyo y partes propias) está en [`docs/declaracionIA.md`](docs/declaracionIA.md), conforme al Art. 12 del reglamento.
 
-1. **`perfiles`**: Información del vecino autenticado.
-   - `id` (UUID, PK referencia a `auth.users`)
-   - `nombre` (TEXT)
-   - `barrio` (TEXT)
-   - `rol` (TEXT, default: `'vecino'`)
-   - `created_at` (TIMESTAMPTZ)
+## 🧭 Limitaciones y trabajo futuro
 
-2. **`propuestas`**: Iniciativas presentadas por la comunidad.
-   - `id` (BIGINT / UUID, PK)
-   - `titulo` (TEXT)
-   - `descripcion` (TEXT)
-   - `barrio` (TEXT)
-   - `categoria` (TEXT: Infraestructura, Seguridad, Eventos, Movilidad)
-   - `creador_id` (UUID, FK a `perfiles.id`)
-   - `votos_actuales` (INT, default: 0)
-   - `votos_meta` (INT, default: 200)
-   - `estado` (TEXT: `'En Votación'`, `'En Gestión'`, `'Completada'`)
-   - `created_at` (TIMESTAMPTZ)
-
-3. **`pasos_ruta`**: Tareas que componen la ruta de acción.
-   - `id` (BIGINT / UUID, PK)
-   - `propuesta_id` (FK a `propuestas.id`)
-   - `orden` (INT)
-   - `titulo` (TEXT)
-   - `estado` (TEXT: `'Pendiente'`, `'En curso'`, `'Completado'`)
-   - `asignado_a` (UUID, FK nullable a `perfiles.id`)
-   - `evidencia_url` (TEXT nullable)
-   - `updated_at` (TIMESTAMPTZ)
-
-4. **`votos_propuestas`**: Registro único de votos.
-   - `usuario_id` (UUID)
-   - `propuesta_id` (BIGINT / UUID)
-   - PK compuesta `(usuario_id, propuesta_id)`
-
-5. **Storage Bucket `evidencias`**:
-   - Bucket público para almacenar comprobantes fotográficos o PDFs asociados a cada paso completado.
-
----
-
-## 🔄 Flujo de Usuario
-
-```
-[ Registro / Login ]
-         │
-         ▼
-[ Explora Propuestas de su Barrio ]
-         │
-    ┌────┴──────────────────────────────┐
-    ▼                                   ▼
-[ Crear Propuesta ]            [ Votar Propuesta ]
-    │                                   │
-    │ (Inicia en "En Votación")         ▼
-    │                          ¿Alcanzó los 200 votos?
-    │                                   │ Sí
-    │                                   ▼
-    │                        [ Desbloqueo de Ruta ]
-    │                       (Estado: "En Gestión")
-    │                                   │
-    └───────────────────────────────────┤
-                                        ▼
-                            [ Checklist Colaborativo ]
-                              1. Reclamar paso
-                              2. Ejecutar gestión
-                              3. Subir foto/PDF de evidencia
-                              4. Paso Completado
-                                        │
-                                        ▼
-                             [ Obra Completada ]
-```
-
----
-
-## 🧼 Buenas Prácticas y Criterios de Mantenibilidad
-
-- **Desacoplamiento de Componentes:** Cada elemento de interfaz (`PropuestaCard`, `ChecklistRuta`, `ProgressBar`, `EstadoBadge`, `HeroBanner`) cuenta con su propio archivo, simplificando pruebas y modificaciones individuales.
-- **Tipos y Constantes Centralizadas:** Las cadenas de estados (`ESTADOS_PROPUESTA`, `ESTADOS_PASO`), filtros y barrios se encuentran tipificadas en `src/constants/`, eliminando riesgos por errores tipográficos (*typos*).
-- **Separación de Custom Hooks y Contextos:** `useAuth` se aloja en su propio archivo dentro de `src/hooks/useAuth.js` y el contexto atómico en `src/context/authContext.js`, garantizando compatibilidad con React Fast Refresh y las directivas de React Compiler.
-- **Cero Warnings de Linter:** El código cumple al 100% las directivas de ESLint (`npm run lint`), evitando cascadas de re-renderizado en efectos y preservando la memoización óptima del compilador de React.
+- **Validación de sector:** hoy cualquier usuario registrado puede votar en cualquier barrio. Se propone validar el sector de residencia con verificación por un administrador.
+- **Rutas por tipo de trámite:** los pasos generados son los mismos para toda propuesta. Se propone una biblioteca de guías por categoría, con versionado.
+- **Panel de administración** y **dashboard para municipios y ONG**. El rol `admin` existe, pero aún no hay panel.
+- **Protección de datos:** los perfiles (nombre y barrio) y las evidencias son de lectura pública para mostrar responsables y soporte de cada paso. Se evaluará restringir esta visibilidad.
+- **Moderación** de propuestas antes de pasar a votación.
