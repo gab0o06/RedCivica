@@ -17,11 +17,11 @@ export function ChecklistRuta({
       </h2>
 
       {pasos.map((paso) => {
-        const esMio = Boolean(user && paso.asignado_a === user.id);
-        const disponibleParaCompletar =
-          paso.estado !== ESTADOS_PASO.COMPLETADO &&
-          (esMio ||
-            (paso.estado === ESTADOS_PASO.EN_CURSO && !paso.asignado_a));
+        const esResponsable = Boolean(
+          user &&
+            paso.asignado_a === user.id &&
+            paso.estado === ESTADOS_PASO.EN_CURSO,
+        );
 
         return (
           <div
@@ -77,7 +77,7 @@ export function ChecklistRuta({
                   </button>
                 )}
 
-                {disponibleParaCompletar && (
+                {esResponsable && (
                   <div className="space-y-3">
                     <label className="block text-base font-medium text-slate-700">
                       Adjunta fotografía o comprobante PDF (máx. 5 MB):
@@ -106,16 +106,14 @@ export function ChecklistRuta({
                           : "✓ Subir evidencia y completar paso"}
                       </button>
 
-                      {esMio && (
-                        <button
-                          type="button"
-                          onClick={() => onLiberar(paso.id)}
-                          disabled={procesandoPasoId === paso.id}
-                          className="border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium text-base px-4 py-2.5 rounded-lg cursor-pointer"
-                        >
-                          Liberar paso
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => onLiberar(paso.id)}
+                        disabled={procesandoPasoId === paso.id}
+                        className="border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium text-base px-4 py-2.5 rounded-lg cursor-pointer"
+                      >
+                        Liberar paso
+                      </button>
                     </div>
                   </div>
                 )}

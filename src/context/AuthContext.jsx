@@ -79,17 +79,16 @@ export function AuthProvider({ children }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          nombre,
+          barrio,
+        },
+      },
     });
     if (error) throw error;
 
     if (data.user) {
-      const { error: perfilError } = await supabase.from("perfiles").insert({
-        id: data.user.id,
-        nombre,
-        barrio,
-        rol: "vecino",
-      });
-      if (perfilError) throw perfilError;
       await cargarPerfil(data.user.id);
     }
 

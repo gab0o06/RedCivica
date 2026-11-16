@@ -46,7 +46,8 @@ export async function reclamarPaso(pasoId, usuarioId) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", pasoId)
-    .is("asignado_a", null) // Control de concurrencia atómico
+    .is("asignado_a", null)
+    .eq("estado", ESTADOS_PASO.PENDIENTE)
     .select();
 
   if (error) throw error;
@@ -59,7 +60,7 @@ export async function reclamarPaso(pasoId, usuarioId) {
 }
 
 export async function liberarPaso(pasoId, usuarioId) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("pasos_ruta")
     .update({
       asignado_a: null,
@@ -67,9 +68,14 @@ export async function liberarPaso(pasoId, usuarioId) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", pasoId)
-    .eq("asignado_a", usuarioId);
+    .eq("asignado_a", usuarioId)
+    .eq("estado", ESTADOS_PASO.EN_CURSO)
+    .select("id");
 
   if (error) throw error;
+  if (!data?.length) {
+    throw new Error("No se pudo liberar el paso: ya no eres su responsable.");
+  }
 }
 
 export async function completarPasoConEvidencia(pasoId, usuarioId, archivo) {
@@ -100,7 +106,7 @@ export async function completarPasoConEvidencia(pasoId, usuarioId, archivo) {
     .from("evidencias")
     .getPublicUrl(rutaArchivo);
 
-  const { error: updateError } = await supabase
+  const { data: filas, error: updateError } = await supabase
     .from("pasos_ruta")
     .update({
       estado: ESTADOS_PASO.COMPLETADO,
@@ -108,15 +114,15 @@ export async function completarPasoConEvidencia(pasoId, usuarioId, archivo) {
       evidencia_url: urlData.publicUrl,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", pasoId);
+    .eq("id", pasoId)
+    .eq("asignado_a", usuarioId)
+    .eq("estado", ESTADOS_PASO.EN_CURSO)
+    .select("id");
 
-  if (updateError) {
-    console.error(
-      `Aviso MVP: Archivo '${rutaArchivo}' subido al bucket pero no se pudo actualizar el paso en base de datos.`,
-      updateError,
-    );
+  if (updateError) throw updateError;
+  if (!filas?.length) {
     throw new Error(
-      `El archivo se subió a Storage pero falló el registro en la base de datos (${updateError.message}). Ha quedado un archivo huérfano en el bucket.`,
+      "No se pudo completar el paso: ya no eres su responsable o cambió de estado.",
     );
   }
 }
