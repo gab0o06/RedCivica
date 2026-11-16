@@ -1,17 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
-
-const BARRIOS_QUITO = [
-  "La Tola",
-  "Mariscal / El Ejido",
-  "La Floresta",
-  "Chimbacalle",
-  "Quitumbe",
-  "Carcelén",
-  "Cotocollao",
-  "San Roque",
-];
+import { useAuth } from "../hooks/useAuth";
+import { BARRIOS_QUITO } from "../constants/barrios";
 
 export default function AuthPage() {
   const [esRegistro, setEsRegistro] = useState(false);

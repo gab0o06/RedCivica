@@ -1,39 +1,59 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-
-const AuthContext = createContext({});
+import { AuthContext } from "./authContext";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [perfil, setPerfil] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [errorPerfil, setErrorPerfil] = useState(null);
+  const [loading, setLoading] = useState(
+    () => Boolean(import.meta.env.VITE_SUPABASE_URL),
+  );
 
   const cargarPerfil = async (userId) => {
     if (!userId) {
       setPerfil(null);
+      setErrorPerfil(null);
       return;
     }
-    const { data } = await supabase
+
+    const { data, error } = await supabase
       .from("perfiles")
       .select("*")
       .eq("id", userId)
       .maybeSingle();
 
+    if (error) {
+      console.error("Error al cargar perfil vecinal:", error.message);
+      setErrorPerfil(
+        "No se pudo cargar la información de tu perfil de barrio.",
+      );
+      setPerfil(null);
+      return;
+    }
+
+    setErrorPerfil(null);
     setPerfil(data ?? null);
   };
 
   useEffect(() => {
     if (!import.meta.env.VITE_SUPABASE_URL) {
-      setLoading(false);
       return;
     }
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const usuarioActual = session?.user ?? null;
-      setUser(usuarioActual);
-      await cargarPerfil(usuarioActual?.id);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(async ({ data: { session } }) => {
+        const usuarioActual = session?.user ?? null;
+        setUser(usuarioActual);
+        await cargarPerfil(usuarioActual?.id);
+      })
+      .catch((err) => {
+        console.error("Error al obtener sesión de autenticación:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     const {
       data: { subscription },
@@ -80,15 +100,14 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
     setUser(null);
     setPerfil(null);
+    setErrorPerfil(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, perfil, loading, signIn, signUp, signOut }}
+      value={{ user, perfil, errorPerfil, loading, signIn, signUp, signOut }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
-
-export const useAuth = () => useContext(AuthContext);

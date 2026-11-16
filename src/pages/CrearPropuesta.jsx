@@ -1,20 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { crearPropuesta } from "../services/propuestasService";
-
-const BARRIOS_QUITO = [
-  "La Tola",
-  "Mariscal / El Ejido",
-  "La Floresta",
-  "Chimbacalle",
-  "Quitumbe",
-  "Carcelén",
-  "Cotocollao",
-  "San Roque",
-];
-
-const CATEGORIAS = ["Infraestructura", "Seguridad", "Eventos", "Movilidad"];
+import { BARRIOS_QUITO } from "../constants/barrios";
+import { CATEGORIAS_PROPUESTA } from "../constants/propuestas";
 
 export default function CrearPropuesta() {
   const { user, perfil } = useAuth();
@@ -22,7 +11,7 @@ export default function CrearPropuesta() {
 
   const [titulo, setTitulo] = useState("");
   const [barrio, setBarrio] = useState(perfil?.barrio || BARRIOS_QUITO[0]);
-  const [categoria, setCategoria] = useState(CATEGORIAS[0]);
+  const [categoria, setCategoria] = useState(CATEGORIAS_PROPUESTA[0]);
   const [descripcion, setDescripcion] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState("");
@@ -38,14 +27,14 @@ export default function CrearPropuesta() {
     setEnviando(true);
 
     try {
-      await crearPropuesta({
+      const nuevaPropuesta = await crearPropuesta({
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
         barrio,
         categoria,
         creadorId: user.id,
       });
-      navigate("/");
+      navigate(`/propuestas/${nuevaPropuesta.id}`);
     } catch (err) {
       setError("No se pudo publicar la propuesta: " + err.message);
     } finally {
@@ -135,7 +124,7 @@ export default function CrearPropuesta() {
                 onChange={(e) => setCategoria(e.target.value)}
                 className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-base text-civica-ink focus:outline-none focus:ring-2 focus:ring-civica-navy"
               >
-                {CATEGORIAS.map((cat) => (
+                {CATEGORIAS_PROPUESTA.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>

@@ -1,12 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import {
   obtenerPropuestaDetalle,
   reclamarPaso,
   liberarPaso,
   completarPasoConEvidencia,
 } from "../services/rutasService";
+import EstadoBadge from "../components/EstadoBadge";
+import ProgressBar from "../components/ProgressBar";
+import ChecklistRuta from "../components/ChecklistRuta";
+import { ESTADOS_PASO } from "../constants/propuestas";
+import { calcularPorcentajeProgreso } from "../utils/progreso";
 
 export default function PropuestaDetalle() {
   const { id } = useParams();
@@ -32,8 +37,31 @@ export default function PropuestaDetalle() {
   }, [id]);
 
   useEffect(() => {
-    cargarDetalle();
-  }, [cargarDetalle]);
+    let activa = true;
+
+    async function fetchDetalle() {
+      try {
+        const data = await obtenerPropuestaDetalle(id);
+        if (activa) {
+          setPropuesta(data);
+        }
+      } catch (err) {
+        if (activa) {
+          setError("No se pudo cargar la propuesta: " + err.message);
+        }
+      } finally {
+        if (activa) {
+          setCargando(false);
+        }
+      }
+    }
+
+    fetchDetalle();
+
+    return () => {
+      activa = false;
+    };
+  }, [id]);
 
   const handleReclamar = async (pasoId) => {
     if (!user) {
@@ -120,9 +148,11 @@ export default function PropuestaDetalle() {
   }
 
   const pasos = propuesta.pasos_ruta || [];
-  const completados = pasos.filter((p) => p.estado === "Completado").length;
+  const completados = pasos.filter(
+    (p) => p.estado === ESTADOS_PASO.COMPLETADO,
+  ).length;
   const porcentajeProgreso = pasos.length
-    ? Math.round((completados / pasos.length) * 100)
+    ? calcularPorcentajeProgreso(completados, pasos.length)
     : 0;
 
   return (
@@ -141,16 +171,11 @@ export default function PropuestaDetalle() {
             Sector: {propuesta.barrio} • {propuesta.categoria}
           </span>
 
-          {propuesta.estado === "Completada" ? (
-            <span className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-950 border border-emerald-300 px-3.5 py-1 rounded-full text-base font-semibold">
-              ✓ Obra / Trámite Completado
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-2 bg-sky-50 text-sky-950 border border-sky-200 px-3.5 py-1 rounded-full text-base font-medium">
-              <span className="w-2.5 h-2.5 rounded-full bg-civica-navy"></span>
-              {propuesta.estado}
-            </span>
-          )}
+          <EstadoBadge
+            estado={propuesta.estado}
+            tipo="propuesta"
+            varianteDetalle
+          />
         </div>
 
         <h1 className="mt-3 text-2xl sm:text-3xl font-bold text-civica-ink">
@@ -172,12 +197,11 @@ export default function PropuestaDetalle() {
                 {porcentajeProgreso}%
               </span>
             </div>
-            <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
-              <div
-                className="bg-civica-sage h-full transition-all duration-300"
-                style={{ width: `${porcentajeProgreso}%` }}
-              />
-            </div>
+            <ProgressBar
+              porcentaje={porcentajeProgreso}
+              color="sage"
+              size="md"
+            />
           </div>
         )}
       </section>
@@ -200,134 +224,18 @@ export default function PropuestaDetalle() {
         </div>
       )}
 
-      {/* Checklist Colaborativo */}
-      <section className="mt-8 space-y-4">
-        <h2 className="text-xl font-bold text-civica-ink">
-          Ruta de Acción Colaborativa (Checklist Vecinal)
-        </h2>
-
-        {pasos.map((paso) => {
-          const esMio = user && paso.asignado_a === user.id;
-          const disponibleParaCompletar =
-            paso.estado !== "Completado" &&
-            (esMio || (paso.estado === "En curso" && !paso.asignado_a));
-
-          return (
-            <div
-              key={paso.id}
-              className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-bold text-civica-ink">
-                    {paso.titulo}
-                  </h3>
-                  {paso.perfiles?.nombre && (
-                    <p className="mt-1 text-base text-slate-600">
-                      Responsable:{" "}
-                      <strong className="text-civica-ink">
-                        {paso.perfiles.nombre}
-                      </strong>
-                    </p>
-                  )}
-                </div>
-
-                {/* Estado individual del paso */}
-                {paso.estado === "Completado" && (
-                  <span className="bg-emerald-50 text-emerald-900 border border-emerald-200 px-3 py-1 rounded-full text-base font-semibold">
-                    ✓ Completado
-                  </span>
-                )}
-                {paso.estado === "En curso" && (
-                  <span className="bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1 rounded-full text-base font-semibold">
-                    ⏳ En curso
-                  </span>
-                )}
-                {paso.estado === "Pendiente" && (
-                  <span className="bg-slate-100 text-slate-700 border border-slate-300 px-3 py-1 rounded-full text-base font-medium">
-                    Pendiente
-                  </span>
-                )}
-              </div>
-
-              {/* Evidencia ya subida */}
-              {paso.evidencia_url && (
-                <div className="mt-4 pt-3 border-t border-slate-100">
-                  <a
-                    href={paso.evidencia_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-base font-semibold text-civica-navy hover:underline"
-                  >
-                    📎 Ver evidencia adjunta (Foto / Documento)
-                  </a>
-                </div>
-              )}
-
-              {/* Controles de acción */}
-              {paso.estado !== "Completado" && (
-                <div className="mt-4 pt-4 border-t border-slate-100">
-                  {!paso.asignado_a && paso.estado === "Pendiente" && (
-                    <button
-                      type="button"
-                      onClick={() => handleReclamar(paso.id)}
-                      disabled={procesandoPasoId === paso.id}
-                      className="bg-civica-navy hover:bg-civica-navy-hover disabled:opacity-60 text-white font-semibold text-base px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
-                    >
-                      {procesandoPasoId === paso.id
-                        ? "Asignando..."
-                        : "✋ Reclamar este paso"}
-                    </button>
-                  )}
-
-                  {disponibleParaCompletar && (
-                    <div className="space-y-3">
-                      <label className="block text-base font-medium text-slate-700">
-                        Adjunta fotografía o comprobante PDF (máx. 5 MB):
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp,application/pdf"
-                          onChange={(e) =>
-                            setArchivosPorPaso((prev) => ({
-                              ...prev,
-                              [paso.id]: e.target.files?.[0] || null,
-                            }))
-                          }
-                          className="mt-1.5 block w-full text-base text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-semibold file:bg-slate-100 file:text-civica-ink hover:file:bg-slate-200"
-                        />
-                      </label>
-
-                      <div className="flex flex-wrap gap-3">
-                        <button
-                          type="button"
-                          onClick={() => handleCompletar(paso.id)}
-                          disabled={procesandoPasoId === paso.id}
-                          className="bg-civica-sage hover:opacity-90 disabled:opacity-60 text-white font-semibold text-base px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
-                        >
-                          {procesandoPasoId === paso.id
-                            ? "Subiendo evidencia..."
-                            : "✓ Subir evidencia y completar paso"}
-                        </button>
-
-                        {esMio && (
-                          <button
-                            type="button"
-                            onClick={() => handleLiberar(paso.id)}
-                            disabled={procesandoPasoId === paso.id}
-                            className="border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium text-base px-4 py-2.5 rounded-lg cursor-pointer"
-                          >
-                            Liberar paso
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </section>
+      {/* Checklist Colaborativo Component */}
+      <ChecklistRuta
+        pasos={pasos}
+        user={user}
+        procesandoPasoId={procesandoPasoId}
+        onSeleccionarArchivo={(pasoId, archivo) =>
+          setArchivosPorPaso((prev) => ({ ...prev, [pasoId]: archivo }))
+        }
+        onReclamar={handleReclamar}
+        onLiberar={handleLiberar}
+        onCompletar={handleCompletar}
+      />
     </div>
   );
 }

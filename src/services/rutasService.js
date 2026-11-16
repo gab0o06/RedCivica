@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import { ESTADOS_PASO } from "../constants/propuestas";
 
 const TIPOS_PERMITIDOS = [
   "image/jpeg",
@@ -41,7 +42,7 @@ export async function reclamarPaso(pasoId, usuarioId) {
     .from("pasos_ruta")
     .update({
       asignado_a: usuarioId,
-      estado: "En curso",
+      estado: ESTADOS_PASO.EN_CURSO,
       updated_at: new Date().toISOString(),
     })
     .eq("id", pasoId)
@@ -62,7 +63,7 @@ export async function liberarPaso(pasoId, usuarioId) {
     .from("pasos_ruta")
     .update({
       asignado_a: null,
-      estado: "Pendiente",
+      estado: ESTADOS_PASO.PENDIENTE,
       updated_at: new Date().toISOString(),
     })
     .eq("id", pasoId)
@@ -102,12 +103,20 @@ export async function completarPasoConEvidencia(pasoId, usuarioId, archivo) {
   const { error: updateError } = await supabase
     .from("pasos_ruta")
     .update({
-      estado: "Completado",
+      estado: ESTADOS_PASO.COMPLETADO,
       asignado_a: usuarioId,
       evidencia_url: urlData.publicUrl,
       updated_at: new Date().toISOString(),
     })
     .eq("id", pasoId);
 
-  if (updateError) throw updateError;
+  if (updateError) {
+    console.error(
+      `Aviso MVP: Archivo '${rutaArchivo}' subido al bucket pero no se pudo actualizar el paso en base de datos.`,
+      updateError,
+    );
+    throw new Error(
+      `El archivo se subió a Storage pero falló el registro en la base de datos (${updateError.message}). Ha quedado un archivo huérfano en el bucket.`,
+    );
+  }
 }
