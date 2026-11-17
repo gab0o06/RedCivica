@@ -7,7 +7,7 @@
 
 **EagleDev 2026 · Categoría Contemporáneo · Nivel Universidades · ODS 10 (meta 10.2)**
 **Equipo:** Team Error404 (Lukas Bustamante, Mateo Hidalgo, Sheldon López) · **IES:** Universidad de Las Américas (UDLA) · **Tutor:** Santiago Solórzano
-**Documentación:** [Declaración de uso de IA](docs/declaracionIA.md) · [Pruebas de seguridad](docs/pruebasSeguridad.md) · [Arquitectura y datos](docs/arquitectura-y-datos.md)
+**Documentación:** [Declaración de uso de IA](docs/declaracionIA.md) · [Pruebas de seguridad](docs/pruebasSeguridad.md) · [Arquitectura](#️-stack-y-arquitectura) y [Datos](#️-base-de-datos-y-almacenamiento)
 
 ---
 
@@ -94,24 +94,30 @@ flowchart TB
 ## 📁 Estructura del proyecto
 
 ```text
-├── docs/                    # Declaración de IA, pruebas de seguridad, arquitectura
-├── supabase/                # Scripts SQL: tablas, triggers, RLS y endurecimiento
-├── public/                  # Favicon y assets públicos
+├── docs/                    # Declaración de IA y pruebas de seguridad
+├── supabase/
+│   └── migrations/          # Scripts SQL (ver orden en "Instalación")
+│       ├── tablas.sql           # Tablas, restricciones e índices
+│       ├── rlsIniciales.sql     # Triggers de estados + RLS (versión inicial, pre-auditoría)
+│       ├── seguridad.sql        # Endurecimiento tras la auditoría (reemplaza lo vulnerable)
+│       ├── datosDemo.sql        # Datos de ejemplo para la demo
+│       └── reinicioDemo.sql     # Restablece la demo a su estado inicial
+├── public/                  # logo.jpeg
 ├── src/
-│   ├── assets/              # Imágenes e ilustraciones
 │   ├── components/          # ChecklistRuta, EstadoBadge, HeroBanner, Navbar,
 │   │                        # ProgressBar, PropuestaCard, ProtectedRoute
-│   ├── constants/           # Estados, categorías, filtros y barrios
-│   ├── context/             # authContext.js y AuthProvider
-│   ├── hooks/               # useAuth
-│   ├── lib/                 # Cliente de Supabase
+│   ├── constants/           # barrios.js, propuestas.js (estados, categorías, filtros)
+│   ├── context/             # AuthContext.jsx (sesión y perfil barrial)
+│   ├── db/                  # supabase.js (cliente de Supabase)
+│   ├── hooks/               # useAuth.js
 │   ├── pages/               # Auth, CrearPropuesta, Home, PropuestaDetalle
 │   ├── services/            # propuestasService, rutasService, votosService
 │   ├── utils/               # progreso.js (cálculo del porcentaje)
 │   ├── App.jsx              # Rutas con carga diferida (React.lazy)
 │   ├── main.jsx
+│   ├── App.css
 │   └── index.css
-├── test/                    # Pruebas unitarias
+├── test/                    # Pruebas unitarias (node --test)
 ├── .env.example             # Plantilla de variables de entorno
 ├── netlify.toml             # Redirecciones SPA para React Router
 ├── eslint.config.js
@@ -205,7 +211,7 @@ Otros comandos: `npm run build`, `npm run lint`, `npm test`.
 | `VITE_SUPABASE_URL` | URL de la API del proyecto en Supabase (ej. `https://xxxx.supabase.co`) |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Llave pública (anon / publishable) de Supabase |
 
-**Base de datos:** ejecuta en el SQL Editor de Supabase los scripts de `supabase/` en orden numérico y crea el bucket público `evidencias`. En Authentication, desactiva "Confirm email" para la demo y configura la URL del sitio.
+**Base de datos:** ejecuta en el SQL Editor de Supabase, en este orden, los scripts de `supabase/migrations/`: `tablas.sql` → `rlsIniciales.sql` → `seguridad.sql` (y, opcional, `datosDemo.sql`). Crea además el bucket público `evidencias`. `reinicioDemo.sql` restablece los datos de la demo. No vuelvas a ejecutar `rlsIniciales.sql` sobre una base ya endurecida: restauraría las políticas vulnerables. En Authentication, desactiva "Confirm email" para la demo y configura la URL del sitio.
 
 ## 🤖 Uso de IA generativa
 
@@ -213,8 +219,22 @@ Se utilizaron herramientas de IA generativa durante el desarrollo; el equipo rev
 
 ## 🧭 Limitaciones y trabajo futuro
 
-- **Validación de sector:** hoy cualquier usuario registrado puede votar en cualquier barrio. Se propone validar el sector de residencia con verificación por un administrador.
-- **Rutas por tipo de trámite:** los pasos generados son los mismos para toda propuesta. Se propone una biblioteca de guías por categoría, con versionado.
-- **Panel de administración** y **dashboard para municipios y ONG**. El rol `admin` existe, pero aún no hay panel.
-- **Protección de datos:** los perfiles (nombre y barrio) y las evidencias son de lectura pública para mostrar responsables y soporte de cada paso. Se evaluará restringir esta visibilidad.
-- **Moderación** de propuestas antes de pasar a votación.
+**Limitaciones conocidas (versión del concurso)**
+
+- **Validación de sector:** el barrio del perfil es declarado por el vecino y hoy cualquier usuario registrado puede votar en cualquier barrio.
+- **Verificación de cuentas:** la confirmación de correo está desactivada para la demo, por lo que es posible crear cuentas múltiples.
+- **Rutas por tipo de trámite:** los pasos generados son los mismos para toda propuesta.
+- **Panel de administración y moderación:** el rol `admin` existe, pero aún no hay panel ni moderación previa a la votación.
+- **Visibilidad de datos:** los perfiles (nombre y barrio) y las evidencias son de lectura pública para mostrar responsables y soporte de cada paso.
+
+**Plan de mejora (no implementado)**
+
+1. **Voto por sector, sin pedir más datos.** Una política RLS que solo acepte el voto si `perfiles.barrio` coincide con el `barrio` de la propuesta. Usa un dato que ya existe y no recolecta información nueva.
+2. **Reducir la exposición de datos personales (minimización).**
+   - Mostrar un *alias* o nombre abreviado (ej. "María P.") en lugar del nombre completo, mediante una vista pública que solo expone ese campo y el barrio.
+   - Cerrar la lectura pública de `perfiles` y dejar a cada usuario ver solo su perfil completo.
+   - Evidencias en un bucket privado con URLs firmadas de corta duración, y recomendación en la interfaz de no subir rostros, documentos de identidad ni datos de terceros.
+   - Aviso de privacidad y consentimiento explícito en el registro.
+3. **Verificación del sector por terceros, sin guardar documentos.** Códigos de invitación emitidos por directivas barriales o por un administrador; el sistema solo guarda un indicador de "sector verificado", no la prueba de residencia.
+4. **Confirmación de correo** activada en producción y límite de tasa para el registro.
+5. **Biblioteca de guías por categoría** con versionado, y **dashboard para municipios y ONG**.

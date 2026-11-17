@@ -1,8 +1,8 @@
 -- rlsIniciales.sql
 -- VERSION INICIAL (antes de la auditoría de seguridad).
--- Solo para instalar una base NUEVA, en este orden: 01 -> 02 -> 03 -> 04.
+-- Solo para instalar una base NUEVA, en este orden: tablas.sql -> rlsIniciales.sql -> seguridad.sql.
 -- NO ejecutar sobre la base actual: restauraría las funciones y políticas vulnerables
--- que 04_endurecimiento_seguridad.sql reemplaza (votos públicos, perfiles con rol
+-- que seguridad.sql reemplaza (votos públicos, perfiles con rol
 -- editable, pasos modificables por cualquier usuario).
 
 create or replace function public.procesar_nuevo_voto()

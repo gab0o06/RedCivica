@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase";
+import { supabase } from "../db/supabase";
 
 export async function obtenerVotosUsuario(usuarioId) {
   if (!usuarioId) return {};

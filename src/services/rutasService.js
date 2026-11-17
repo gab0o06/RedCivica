@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase";
+import { supabase } from "../db/supabase";
 import { ESTADOS_PASO } from "../constants/propuestas";
 
 const TIPOS_PERMITIDOS = [

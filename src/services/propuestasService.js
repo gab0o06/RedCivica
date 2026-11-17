@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase";
+import { supabase } from "../db/supabase";
 
 export async function obtenerPropuestasConPasos() {
   const { data, error } = await supabase
