@@ -37,7 +37,6 @@ export function PropuestaCard({
           <EstadoBadge estado={propuesta.estado} />
         </div>
 
-        {/* Contenido según estado */}
         {propuesta.estado === ESTADOS_PROPUESTA.EN_VOTACION ? (
           <div className="mt-5">
             <ProgressBar
@@ -53,11 +52,7 @@ export function PropuestaCard({
           </div>
         ) : (
           <div className="mt-5">
-            <ProgressBar
-              porcentaje={porcentajePasos}
-              color="sage"
-              size="sm"
-            />
+            <ProgressBar porcentaje={porcentajePasos} color="sage" size="sm" />
             <p className="mt-2.5 text-base font-semibold text-civica-ink">
               Ruta Desbloqueada • {completados} de {pasos.length} pasos
               completados
@@ -95,7 +90,6 @@ export function PropuestaCard({
         )}
       </div>
 
-      {/* Acción principal de la tarjeta */}
       <div className="mt-6 pt-4 border-t border-slate-100">
         {propuesta.estado === ESTADOS_PROPUESTA.EN_VOTACION ? (
           <button

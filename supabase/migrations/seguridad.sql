@@ -1,12 +1,6 @@
--- 04_endurecimiento_seguridad.sql
--- Ejecutar en el SQL Editor de Supabase DESPUES de tus triggers y políticas actuales.
--- Es re-ejecutable. Aplicar junto con el cambio de signUp en AuthContext.jsx.
--- Nota: auth.uid() es NULL cuando se ejecuta desde el SQL Editor (seed y reset de demo
--- siguen funcionando); las reglas solo aplican a usuarios de la app.
+-- seguridad.sql
+-- Ejecutar en el SQL Editor de Supabase DESPUES de las politicas originales.
 
--- =========================================================
--- 1. PERFILES: se crean por trigger y el rol no se puede cambiar
--- =========================================================
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -31,7 +25,6 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- El cliente ya no inserta perfiles
 drop policy if exists "Usuario crea su perfil" on public.perfiles;
 
 drop policy if exists "Usuario edita su perfil" on public.perfiles;
@@ -56,9 +49,6 @@ create trigger proteger_rol_perfil
   before update on public.perfiles
   for each row execute function public.proteger_rol();
 
--- =========================================================
--- 2. PROPUESTAS: el servidor fija estado, votos y creador
--- =========================================================
 create or replace function public.forzar_valores_propuesta()
 returns trigger
 language plpgsql
@@ -80,9 +70,6 @@ create trigger forzar_valores_propuesta
   before insert on public.propuestas
   for each row execute function public.forzar_valores_propuesta();
 
--- =========================================================
--- 3. VOTOS: privados y solo en propuestas "En Votación"
--- =========================================================
 drop policy if exists "Lectura publica votos" on public.votos;
 drop policy if exists "Ver mis votos" on public.votos;
 create policy "Ver mis votos" on public.votos
@@ -131,9 +118,6 @@ begin
 end;
 $$;
 
--- =========================================================
--- 4. PASOS DE LA RUTA: transiciones válidas y dueño del paso
--- =========================================================
 create unique index if not exists pasos_unico_orden
   on public.pasos_ruta (propuesta_id, orden);
 
@@ -150,7 +134,7 @@ set search_path = public
 as $$
 begin
   if auth.uid() is null then
-    return new;  -- SQL Editor / mantenimiento
+    return new;  
   end if;
 
   if new.propuesta_id <> old.propuesta_id
@@ -216,9 +200,6 @@ begin
 end;
 $$;
 
--- =========================================================
--- 5. STORAGE: límites a nivel de bucket (no dependen del cliente)
--- =========================================================
 update storage.buckets
 set file_size_limit = 5242880,
     allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp', 'application/pdf']

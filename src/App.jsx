@@ -31,10 +31,8 @@ export default function App() {
           <main className="flex-1">
             <Suspense fallback={<PantallaCarga />}>
               <Routes>
-                {/* Portada completa */}
                 <Route path="/" element={<HomePage key="inicio" />} />
 
-                {/* Vista directa de votación ciudadana */}
                 <Route
                   path="/propuestas"
                   element={
@@ -47,7 +45,6 @@ export default function App() {
                   }
                 />
 
-                {/* Vista directa de checklists colaborativos */}
                 <Route
                   path="/rutas"
                   element={
@@ -60,16 +57,13 @@ export default function App() {
                   }
                 />
 
-                {/* Detalle de propuesta y checklist */}
                 <Route
                   path="/propuestas/:id"
                   element={<PropuestaDetallePage />}
                 />
 
-                {/* Autenticación */}
                 <Route path="/auth" element={<Auth />} />
 
-                {/* Rutas protegidas */}
                 <Route
                   path="/propuestas/nueva"
                   element={
@@ -79,7 +73,6 @@ export default function App() {
                   }
                 />
 
-                {/* Redirección por defecto */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

@@ -60,7 +60,9 @@ export default function HomePage({
         }
       } catch (err) {
         if (activa) {
-          setMensajeError("No se pudieron cargar las propuestas: " + err.message);
+          setMensajeError(
+            "No se pudieron cargar las propuestas: " + err.message,
+          );
         }
       } finally {
         if (activa) {
@@ -88,7 +90,6 @@ export default function HomePage({
 
     try {
       await registrarVoto(user.id, propuestaId);
-      // Recargamos desde BD para reflejar el trigger automático si llegó a la meta
       await cargarDatos();
     } catch (err) {
       setMensajeError(err.message);
@@ -112,10 +113,8 @@ export default function HomePage({
 
   return (
     <div>
-      {/* Hero Banner Component */}
       {mostrarHero && <HeroBanner />}
 
-      {/* Buscador y Filtros por Estado */}
       <section
         id="listado-propuestas"
         className="max-w-6xl mx-auto px-4 sm:px-6 py-8"
@@ -161,7 +160,6 @@ export default function HomePage({
           </div>
         )}
 
-        {/* Listado de Propuestas */}
         <div className="flex flex-wrap items-center justify-between gap-4 mt-6 mb-5">
           <h2 className="text-2xl font-bold text-civica-ink">
             {tituloSeccion}
@@ -199,7 +197,6 @@ export default function HomePage({
           </div>
         )}
 
-        {/* Estadísticas de la Comunidad */}
         <section className="mt-12 bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="text-xl font-bold text-civica-ink">
             Estadísticas de la Comunidad

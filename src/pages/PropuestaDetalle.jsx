@@ -185,7 +185,6 @@ export default function PropuestaDetalle() {
           {propuesta.descripcion}
         </p>
 
-        {/* Barra de progreso general de la Ruta */}
         {pasos.length > 0 && (
           <div className="mt-6 pt-6 border-t border-slate-200">
             <div className="flex justify-between items-center mb-2">
@@ -224,7 +223,6 @@ export default function PropuestaDetalle() {
         </div>
       )}
 
-      {/* Checklist Colaborativo Component */}
       <ChecklistRuta
         pasos={pasos}
         user={user}

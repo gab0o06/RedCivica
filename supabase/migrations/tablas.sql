@@ -1,12 +1,11 @@
--- 01_tablas.sql  (esquema en snake_case, el que usa el frontend y los triggers)
--- Verifica contra tu base real antes de subirlo al repo.
+-- tablas.sql
 
 create table if not exists public.perfiles (
   id uuid primary key references auth.users(id) on delete cascade,
   nombre text not null,
   barrio text not null,
   rol text not null default 'vecino' check (rol in ('vecino', 'admin')),
-  created_at timestamptz not null default now()
+  created_at timestamptz default now()
 );
 
 create table if not exists public.propuestas (
@@ -20,15 +19,15 @@ create table if not exists public.propuestas (
   votos_actuales int not null default 0 check (votos_actuales >= 0),
   votos_meta int not null default 200 check (votos_meta > 0),
   creador_id uuid references public.perfiles(id) on delete set null,
-  created_at timestamptz not null default now()
+  created_at timestamptz default now()
 );
 
 create table if not exists public.votos (
   id uuid primary key default gen_random_uuid(),
   usuario_id uuid not null references auth.users(id) on delete cascade,
   propuesta_id uuid not null references public.propuestas(id) on delete cascade,
-  created_at timestamptz not null default now(),
-  constraint voto_unico_usuario unique (usuario_id, propuesta_id)
+  created_at timestamptz default now(),
+  constraint voto_unico_por_usuario unique (usuario_id, propuesta_id)
 );
 
 create table if not exists public.pasos_ruta (
@@ -40,7 +39,7 @@ create table if not exists public.pasos_ruta (
     check (estado in ('Pendiente', 'En curso', 'Completado')),
   asignado_a uuid references public.perfiles(id) on delete set null,
   evidencia_url text,
-  updated_at timestamptz not null default now()
+  updated_at timestamptz default now()
 );
 
 create index if not exists idx_votos_propuesta on public.votos(propuesta_id);

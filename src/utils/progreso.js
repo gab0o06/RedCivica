@@ -1,10 +1,3 @@
-/**
- * Calcula el porcentaje de progreso como un entero clampeado entre 0 y 100.
- *
- * @param {number} valorActual - Cantidad actual (votos actuales, pasos completados)
- * @param {number} meta - Meta u objetivo total (votos meta, total de pasos)
- * @returns {number} Entero entre 0 y 100
- */
 export function calcularPorcentajeProgreso(valorActual, meta) {
   if (typeof valorActual !== "number" || typeof meta !== "number") {
     return 0;

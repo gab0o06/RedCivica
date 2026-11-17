@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
-import { AuthContext } from "./authContext";
+import { supabase } from "../db/supabase";
+import { createContext } from "react";
+export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [errorPerfil, setErrorPerfil] = useState(null);
-  const [loading, setLoading] = useState(
-    () => Boolean(import.meta.env.VITE_SUPABASE_URL),
+  const [loading, setLoading] = useState(() =>
+    Boolean(import.meta.env.VITE_SUPABASE_URL),
   );
 
   const cargarPerfil = async (userId) => {

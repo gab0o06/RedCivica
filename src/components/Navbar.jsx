@@ -26,14 +26,12 @@ export default function Navbar() {
         className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between"
         aria-label="Navegación principal"
       >
-        {/* Izquierda: Marca + Enlaces principales */}
         <div className="flex items-center gap-8">
           <Link
             to="/"
             onClick={() => setMenuAbierto(false)}
             className="flex items-center gap-2.5 text-civica-ink font-bold text-xl tracking-tight"
           >
-            {/* Ícono SVG liviano de comunidad */}
             <span className="w-9 h-9 rounded-lg bg-civica-navy flex items-center justify-center text-white shrink-0">
               <img
                 src="/logo.jpeg"
@@ -44,7 +42,6 @@ export default function Navbar() {
             <span>Red Cívica</span>
           </Link>
 
-          {/* Enlaces en escritorio */}
           <div className="hidden md:flex items-center gap-6">
             <NavLink to="/" end className={claseEnlace}>
               Inicio
@@ -58,7 +55,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Derecha: Estado de sesión en escritorio */}
         <div className="hidden md:flex items-center gap-4">
           {user ? (
             <>
@@ -90,7 +86,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Botón hamburguesa en móvil */}
         <button
           type="button"
           onClick={() => setMenuAbierto(!menuAbierto)}
@@ -130,7 +125,6 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Menú desplegable en móvil */}
       {menuAbierto && (
         <div className="md:hidden bg-white border-t border-slate-200 px-4 pt-3 pb-5 space-y-3 shadow-md">
           <div className="flex flex-col space-y-2">

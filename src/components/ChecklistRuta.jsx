@@ -19,8 +19,8 @@ export function ChecklistRuta({
       {pasos.map((paso) => {
         const esResponsable = Boolean(
           user &&
-            paso.asignado_a === user.id &&
-            paso.estado === ESTADOS_PASO.EN_CURSO,
+          paso.asignado_a === user.id &&
+          paso.estado === ESTADOS_PASO.EN_CURSO,
         );
 
         return (
@@ -43,11 +43,9 @@ export function ChecklistRuta({
                 )}
               </div>
 
-              {/* Estado individual del paso con componente reutilizable */}
               <EstadoBadge estado={paso.estado} tipo="paso" />
             </div>
 
-            {/* Evidencia ya subida */}
             {paso.evidencia_url && (
               <div className="mt-4 pt-3 border-t border-slate-100">
                 <a
@@ -61,7 +59,6 @@ export function ChecklistRuta({
               </div>
             )}
 
-            {/* Controles de acción */}
             {paso.estado !== ESTADOS_PASO.COMPLETADO && (
               <div className="mt-4 pt-4 border-t border-slate-100">
                 {!paso.asignado_a && paso.estado === ESTADOS_PASO.PENDIENTE && (
