@@ -37,7 +37,7 @@ export function ChecklistRuta({
                   <p className="mt-1 text-base text-slate-600">
                     Responsable:{" "}
                     <strong className="text-civica-ink">
-                      {paso.perfiles.nombre}
+                      {paso.perfiles.nombre.replace(/^(\S+)(.*?\s)(\S)\S*$/, "$1 $3.")}
                     </strong>
                   </p>
                 )}
