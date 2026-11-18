@@ -1,14 +1,20 @@
-# Red Cívica 🏙️
+<div align="center">
+  <img src="./public/logo.jpeg" alt="Logo Red Cívica" width="110" />
+  <h1>🏙️ Red Cívica</h1>
+  <p><strong>Donde la organización vecinal se convierte en obras y soluciones.</strong></p>
+  <p>Plataforma web <em>mobile-first</em> de participación ciudadana (CivicTech) para los barrios de Quito, Ecuador, alineada con el <strong>ODS 10 (Meta 10.2)</strong>.</p>
 
-> **Donde la organización vecinal se convierte en obras y soluciones.**
-> Plataforma web para barrios de Quito: los vecinos proponen mejoras, votan (1 vecino = 1 voto) y, al llegar a la meta, se desbloquea una **Ruta de Acción** colaborativa con pasos, responsables y evidencia verificable.
+  <p>
+    <a href="https://redcivica.netlify.app"><img src="https://img.shields.io/badge/Demo_en_vivo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white" alt="Demo en vivo" /></a>
+    <img src="https://img.shields.io/badge/React_19-Vite_8-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+    <img src="https://img.shields.io/badge/Supabase-PostgreSQL_RLS-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+    <img src="https://img.shields.io/badge/ODS_10.2-Inclusión_Cívica-DD1367?style=for-the-badge" alt="ODS 10.2" />
+  </p>
+</div>
 
-**Demo en línea:** https://redcivica.netlify.app
-
-**EagleDev 2026 · Categoría Contemporáneo · Nivel Universidades · ODS 10 (meta 10.2)**
-**Equipo:** Team Error404 (Lukas Bustamante, Mateo Hidalgo, Sheldon López) · **IES:** Universidad de Las Américas (UDLA) · **Tutor:** Santiago Solórzano
-**Documentación:** [Declaración de uso de IA](docs/declaracionIA.md) · [Pruebas de seguridad](docs/pruebasSeguridad.md) · [Arquitectura](#️-stack-y-arquitectura) y [Datos](#️-base-de-datos-y-almacenamiento)
-
+> **🏆 EagleDev 2026 · Categoría Contemporáneo · Nivel Universidades**  
+> **Equipo:** Team Error404 (Lukas Bustamante, Mateo Hidalgo, Sheldon López) · **IES:** Universidad de Las Américas (UDLA) · **Tutor:** Santiago Solórzano  
+> **Documentación:** [Declaración de uso de IA](docs/declaracionIA.md) · [Pruebas de seguridad](docs/pruebasSeguridad.md) · [Arquitectura](#️-stack-y-arquitectura) · [Base de datos](#️-base-de-datos-y-almacenamiento)
 ---
 
 ## 📋 Contenido
@@ -52,6 +58,22 @@ Red Cívica conecta dos cosas que hoy están separadas: la **organización vecin
 3. Los vecinos votan. Al llegar a la meta (200 votos) la propuesta pasa a `En Gestión` y se genera su Ruta de Acción.
 4. Los vecinos reclaman pasos, realizan la gestión y suben evidencia.
 5. Cuando todos los pasos están completados, la propuesta pasa a `Completada`.
+
+## 📱 Capturas de Pantalla
+
+| Exploración y Filtros | Votación (1 Vecino = 1 Voto) | Ruta de Acción y Evidencia |
+| :---: | :---: | :---: |
+| <img src="./assets/screen-home.jpeg" width="230" alt="Feed de propuestas" /> | <img src="./assets/screen-voto.jpeg" width="230" alt="Detalle de propuesta" /> | <img src="./assets/screen-ruta.jpeg" width="230" alt="Ruta de acción" /> |
+
+## 💼 Modelo de Negocio e Impacto Territorial
+
+| Segmento | Plan | Propuesta de Valor |
+| :--- | :--- | :--- |
+| **Ciudadanos** | **Gratuito ($0)** | Proponer mejoras, votar y colaborar en rutas de acción sin barreras económicas. |
+| **Comités Barriales** | **Premium ($5,99/mes)** | Guías legales detalladas y plantillas de oficios municipales listos para ingresar. |
+| **Municipios y ONG** | **Licencias B2B** | Analítica territorial y trazabilidad de necesidades priorizadas por sector. |
+
+* **Piloto validado:** Proyección a 12 meses iniciando en **La Tola, Mariscal y La Floresta** (Quito), con punto de equilibrio en 59 comités suscritos.
 
 ## 🛠️ Stack y arquitectura
 
