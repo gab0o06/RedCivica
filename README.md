@@ -1,12 +1,13 @@
 <div align="center">
-  <img src="./public/logo.jpeg" alt="Logo Red Cívica" width="110" />
+  <img src="./public/logo.jpeg" alt="Logo Red Cívica" width="115" />
   <h1>🏙️ Red Cívica</h1>
   <p><strong>Donde la organización vecinal se convierte en obras y soluciones.</strong></p>
-  <p>Plataforma web <em>mobile-first</em> de participación ciudadana (CivicTech) para los barrios de Quito, Ecuador, alineada con el <strong>ODS 10 (Meta 10.2)</strong>.</p>
+  <p>Plataforma web <em>mobile-first</em> de participación ciudadana y tecnología cívica (CivicTech) desarrollada para los barrios de Quito, Ecuador, alineada con el <strong>ODS 10 (Meta 10.2: Inclusión social, económica y política)</strong>.</p>
 
   <p>
     <a href="https://redcivica.netlify.app"><img src="https://img.shields.io/badge/Demo_en_vivo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white" alt="Demo en vivo" /></a>
     <img src="https://img.shields.io/badge/React_19-Vite_8-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" />
     <img src="https://img.shields.io/badge/Supabase-PostgreSQL_RLS-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
     <img src="https://img.shields.io/badge/ODS_10.2-Inclusión_Cívica-DD1367?style=for-the-badge" alt="ODS 10.2" />
   </p>
@@ -15,78 +16,93 @@
 > **🏆 EagleDev 2026 · Categoría Contemporáneo · Nivel Universidades**  
 > **Equipo:** Team Error404 (Lukas Bustamante, Mateo Hidalgo, Sheldon López) · **IES:** Universidad de Las Américas (UDLA) · **Tutor:** Santiago Solórzano  
 > **Documentación:** [Declaración de uso de IA](docs/declaracionIA.md) · [Pruebas de seguridad](docs/pruebasSeguridad.md) · [Arquitectura](#️-stack-y-arquitectura) · [Base de datos](#️-base-de-datos-y-almacenamiento)
+
 ---
 
 ## 📋 Contenido
 
-- [Red Cívica 🏙️](#red-cívica-️)
-  - [📋 Contenido](#-contenido)
-  - [🎯 Problema y ODS](#-problema-y-ods)
-  - [✨ Qué hace la plataforma](#-qué-hace-la-plataforma)
-  - [🔄 Flujo de usuario](#-flujo-de-usuario)
-  - [🛠️ Stack y arquitectura](#️-stack-y-arquitectura)
-  - [📁 Estructura del proyecto](#-estructura-del-proyecto)
-  - [🗄️ Base de datos y almacenamiento](#️-base-de-datos-y-almacenamiento)
-  - [🔐 Seguridad](#-seguridad)
-  - [🧪 Pruebas](#-pruebas)
-  - [🚀 Instalación y configuración](#-instalación-y-configuración)
-  - [🤖 Uso de IA generativa](#-uso-de-ia-generativa)
-  - [🧭 Limitaciones y trabajo futuro](#-limitaciones-y-trabajo-futuro)
+- [🎯 Problema y ODS](#-problema-y-ods)
+- [✨ Características Principales](#-características-principales)
+- [🔄 Flujo de Usuario ("De la queja a la obra")](#-flujo-de-usuario-de-la-queja-a-la-obra)
+- [📱 Capturas de Pantalla](#-capturas-de-pantalla)
+- [💼 Modelo de Negocio e Impacto Territorial](#-modelo-de-negocio-e-impacto-territorial)
+- [🛠️ Stack y Arquitectura](#️-stack-y-arquitectura)
+- [📁 Estructura del Proyecto](#-estructura-del-proyecto)
+- [🗄️ Base de Datos y Almacenamiento](#️-base-de-datos-y-almacenamiento)
+- [🔐 Seguridad por Diseño (Zero-Trust)](#-seguridad-por-diseño-zero-trust)
+- [🧪 Auditoría y Pruebas](#-auditoría-y-pruebas)
+- [🚀 Instalación y Configuración](#-instalación-y-configuración)
+- [🤖 Uso de IA Generativa](#-uso-de-ia-generativa)
+- [📈 Roadmap y Trabajo Futuro](#-roadmap-y-trabajo-futuro)
 
 ---
 
 ## 🎯 Problema y ODS
 
-Los barrios saben qué necesitan, pero muchas veces no saben cómo conseguirlo: los trámites se rechazan por errores de forma y los presupuestos participativos no se ejecutan. Pagan el costo las comunidades con menos recursos y menos acceso a información.
+Los barrios de Quito saben exactamente qué necesitan (luminarias, bacheo, seguridad, mantenimiento de espacios públicos), pero muchas veces sus reclamos mueren en chats de WhatsApp o son rechazados en ventanillas municipales por errores de forma y falta de guía técnica. Pagan el costo las comunidades con menos recursos y menor acceso a asesoría.
 
-Red Cívica conecta dos cosas que hoy están separadas: la **organización vecinal** y la **burocracia**. Se alinea con el **ODS 10 (Reducción de las desigualdades), meta 10.2**: promover la inclusión social y política de todas las personas.
+**Red Cívica** conecta dos mundos hoy separados: la **organización vecinal** y la **gestión municipal**. El proyecto se alinea directamente con el **ODS 10 (Reducción de las desigualdades), Meta 10.2**: promover la inclusión social, económica y política de todas las personas.
 
-## ✨ Qué hace la plataforma
+---
 
-- **1 vecino = 1 voto.** El voto único está garantizado en la base de datos con una restricción `UNIQUE`.
-- **Estados automáticos.** `En Votación` → `En Gestión` → `Completada`, controlados por triggers de PostgreSQL.
-- **Ruta de Acción colaborativa.** Al alcanzar la meta de votos se crean los pasos del trámite. Cada vecino puede reclamar un paso, liberarlo y completarlo subiendo una foto o PDF (máx. 5 MB) como evidencia. El reclamo es atómico, para evitar que dos vecinos tomen el mismo paso.
-- **Progreso calculado** a partir de los pasos completados, no guardado como un número suelto.
-- **Perfil barrial.** Cada vecino se registra asociado a su sector; el perfil lo crea la base de datos al registrarse.
-- **Filtros** por estado de la propuesta y búsqueda por barrio o palabra clave.
-- **Diseño móvil y accesible:** tipografía legible, alto contraste y textos simples.
+## ✨ Características Principales
 
-## 🔄 Flujo de usuario
+- **Democracia Barrial (`1 Vecino = 1 Voto`):** El voto único está garantizado a nivel de motor de base de datos mediante una restricción `UNIQUE (usuario_id, propuesta_id)` y bloqueo de votos fuera de fase.
+- **La Compuerta (Triggers Automáticos):** Transiciones de estado (`En Votación` → `En Gestión` → `Completada`) gobernadas íntegramente por triggers en PostgreSQL al alcanzar la meta de 200 votos.
+- **Ruta de Acción Colaborativa:** Al desbloquearse la gestión, se genera una guía de 3 pasos redactados en lenguaje sencillo de barrio. Los vecinos reclaman pasos de forma atómica (evitando colisiones de concurrencia) y suben evidencia verificable (fotos o PDFs de hasta 5 MB).
+- **Progreso Calculado en Tiempo Real:** El porcentaje de avance se computa dinámicamente a partir de los pasos completados, evitando inconsistencias de estado.
+- **Perfil Barrial Automatizado:** Cada vecino se registra asociado a su sector; el perfil se crea automáticamente mediante un trigger (`SECURITY DEFINER`) al registrarse.
+- **Exploración y Diseño Mobile-First:** Filtros por estado, búsqueda por barrio o palabra clave, tipografía legible y alto contraste pensado para uso desde el celular en territorio.
 
-1. El vecino se registra o inicia sesión.
-2. Explora las propuestas de su barrio o crea una nueva (nace en `En Votación`).
-3. Los vecinos votan. Al llegar a la meta (200 votos) la propuesta pasa a `En Gestión` y se genera su Ruta de Acción.
-4. Los vecinos reclaman pasos, realizan la gestión y suben evidencia.
-5. Cuando todos los pasos están completados, la propuesta pasa a `Completada`.
+---
+
+## 🔄 Flujo de Usuario ("De la queja a la obra")
+
+1. **Registro Barrial:** El vecino crea su cuenta vinculada a su sector de Quito.
+2. **Propuesta:** Publica una mejora para su barrio (nace en estado `En Votación`).
+3. **Votación:** Los vecinos respaldan la iniciativa (`1 vecino = 1 voto`). Al llegar a **200 votos**, un trigger cambia el estado a `En Gestión` y desbloquea la **Ruta de Acción**.
+4. **Ejecución Colaborativa:** Los vecinos reclaman pasos disponibles, realizan la gestión correspondiente y adjuntan evidencia verificable.
+5. **Obra Completada:** Cuando todos los pasos cuentan con evidencia válida y están marcados como completados, la propuesta pasa automáticamente a `Completada`.
+
+---
 
 ## 📱 Capturas de Pantalla
 
+> *Nota: Actualiza las rutas de las imágenes en `./assets/` con tus capturas finales del despliegue móvil.*
+
 | Exploración y Filtros | Votación (1 Vecino = 1 Voto) | Ruta de Acción y Evidencia |
 | :---: | :---: | :---: |
-| <img src="./assets/screen-home.jpeg" width="230" alt="Feed de propuestas" /> | <img src="./assets/screen-voto.jpeg" width="230" alt="Detalle de propuesta" /> | <img src="./assets/screen-ruta.jpeg" width="230" alt="Ruta de acción" /> |
+| <img src="./assets/screen-home.jpeg" width="230" alt="Feed de propuestas" /> | <img src="./assets/screen-voto.jpeg" width="230" alt="Detalle de propuesta y votación" /> | <img src="./assets/screen-ruta.jpeg" width="230" alt="Ruta de acción colaborativa" /> |
+
+---
 
 ## 💼 Modelo de Negocio e Impacto Territorial
+
+Red Cívica opera bajo un modelo híbrido **Freemium + B2B** diseñado para garantizar acceso universal al ciudadano y sostenibilidad financiera a mediano plazo:
 
 | Segmento | Plan | Propuesta de Valor |
 | :--- | :--- | :--- |
 | **Ciudadanos** | **Gratuito ($0)** | Proponer mejoras, votar y colaborar en rutas de acción sin barreras económicas. |
-| **Comités Barriales** | **Premium ($5,99/mes)** | Guías legales detalladas y plantillas de oficios municipales listos para ingresar. |
+| **Dirigentes y Comités** | **Premium ($5,99/mes o $59,90/año)** | Guías legales detalladas y plantillas de oficios listas para ingresar (ahorro frente a asesorías externas de $15–$40). |
 | **Municipios y ONG** | **Licencias B2B** | Analítica territorial y trazabilidad de necesidades priorizadas por sector. |
 
-* **Piloto validado:** Proyección a 12 meses iniciando en **La Tola, Mariscal y La Floresta** (Quito), con punto de equilibrio en 59 comités suscritos.
+- **Validación Financiera (Proyección a 12 meses):** Costo operativo fijo estimado de ~$272,50 a $322,50/mes, punto de equilibrio en **59 comités suscritos** y flujo de caja positivo a partir del **mes 9**.
+- **Piloto Territorial:** Inversión semilla proyectada de $3.700 USD para un piloto inicial de 12 meses en **3 barrios de Quito (La Tola, Mariscal y La Floresta)**, escalable a 12 sectores.
 
-## 🛠️ Stack y arquitectura
+---
+
+## 🛠️ Stack y Arquitectura
 
 | Capa | Tecnología |
-|---|---|
-| Frontend | React 19 + Vite 8 |
-| Estilos | Tailwind CSS v4 |
-| Enrutamiento | React Router DOM v7 |
-| Backend (BaaS) | Supabase: Auth, PostgreSQL con RLS y triggers, Storage |
-| Despliegue | Netlify |
-| Calidad | ESLint 10 (React Hooks, React Compiler, Fast Refresh) y pruebas unitarias |
+| :--- | :--- |
+| **Frontend** | React 19 + Vite 8 |
+| **Estilos** | Tailwind CSS v4 (Mobile-First) |
+| **Enrutamiento** | React Router DOM v7 (Code-splitting con `React.lazy`) |
+| **Backend (BaaS)** | Supabase (Auth, PostgreSQL con RLS y Triggers, Storage) |
+| **Despliegue** | Netlify (Rewrites SPA en `netlify.toml`) |
+| **Calidad** | ESLint 10 (React Hooks, React Compiler, Fast Refresh) y `node --test` |
 
-Las páginas no hablan directamente con Supabase: pasan por una **capa de servicios**. Las reglas críticas (voto único, cambios de estado, permisos) viven en la **base de datos**, no en el navegador.
+Las vistas nunca consultan directamente a Supabase: toda comunicación pasa por una **capa de servicios desacoplada**. Las reglas críticas de negocio y seguridad viven en **PostgreSQL**, aplicando una arquitectura **Zero-Trust** en el cliente.
 
 ```mermaid
 flowchart TB
@@ -111,152 +127,3 @@ flowchart TB
     Srv <--> DB
     Srv <--> Storage
     Auth -. "trigger: on_auth_user_created" .-> DB
-```
-
-## 📁 Estructura del proyecto
-
-```text
-├── docs/                    # Declaración de IA y pruebas de seguridad
-├── supabase/
-│   └── migrations/          # Scripts SQL (ver orden en "Instalación")
-│       ├── tablas.sql           # Tablas, restricciones e índices
-│       ├── rlsIniciales.sql     # Triggers de estados + RLS (versión inicial, pre-auditoría)
-│       ├── seguridad.sql        # Endurecimiento tras la auditoría (reemplaza lo vulnerable)
-│       ├── datosDemo.sql        # Datos de ejemplo para la demo
-│       └── reinicioDemo.sql     # Restablece la demo a su estado inicial
-├── public/                  # logo.jpeg
-├── src/
-│   ├── components/          # ChecklistRuta, EstadoBadge, HeroBanner, Navbar,
-│   │                        # ProgressBar, PropuestaCard, ProtectedRoute
-│   ├── constants/           # barrios.js, propuestas.js (estados, categorías, filtros)
-│   ├── context/             # AuthContext.jsx (sesión y perfil barrial)
-│   ├── db/                  # supabase.js (cliente de Supabase)
-│   ├── hooks/               # useAuth.js
-│   ├── pages/               # Auth, CrearPropuesta, Home, PropuestaDetalle
-│   ├── services/            # propuestasService, rutasService, votosService
-│   ├── utils/               # progreso.js (cálculo del porcentaje)
-│   ├── App.jsx              # Rutas con carga diferida (React.lazy)
-│   ├── main.jsx
-│   ├── App.css
-│   └── index.css
-├── test/                    # Pruebas unitarias (node --test)
-├── .env.example             # Plantilla de variables de entorno
-├── netlify.toml             # Redirecciones SPA para React Router
-├── eslint.config.js
-├── package.json
-└── vite.config.js
-```
-
-## 🗄️ Base de datos y almacenamiento
-
-```mermaid
-erDiagram
-    PERFILES {
-        uuid id PK "igual a auth.users.id"
-        text nombre
-        text barrio
-        text rol "vecino por defecto, protegido por trigger"
-        timestamptz created_at
-    }
-    PROPUESTAS {
-        uuid id PK
-        text titulo
-        text descripcion
-        text barrio
-        text categoria
-        text estado "En Votación, En Gestión o Completada"
-        int votos_actuales "default 0"
-        int votos_meta "default 200"
-        uuid creador_id FK
-        timestamptz created_at
-    }
-    VOTOS {
-        uuid id PK
-        uuid usuario_id FK "UNIQUE con propuesta_id"
-        uuid propuesta_id FK
-        timestamptz created_at
-    }
-    PASOS_RUTA {
-        uuid id PK
-        uuid propuesta_id FK
-        int orden
-        text titulo
-        text estado "Pendiente, En curso o Completado"
-        uuid asignado_a FK
-        text evidencia_url "URL del bucket"
-        timestamptz updated_at
-    }
-
-    PERFILES ||--o{ PROPUESTAS : crea
-    PERFILES ||--o{ VOTOS : emite
-    PROPUESTAS ||--o{ VOTOS : recibe
-    PROPUESTAS ||--o{ PASOS_RUTA : "desbloquea al llegar a la meta"
-    PERFILES ||--o{ PASOS_RUTA : "reclama y ejecuta"
-```
-
-- `votos_actuales`, el estado de la propuesta y los pasos de la ruta los actualizan **triggers**, no el cliente.
-- **Storage:** bucket `evidencias` de lectura pública, limitado en el servidor a JPG, PNG, WEBP y PDF de hasta 5 MB.
-
-## 🔐 Seguridad
-
-La seguridad se aplica en el servidor (Row Level Security y triggers de PostgreSQL), no solo en la interfaz:
-
-- El **perfil** se crea con un trigger al registrarse y el **rol** no puede ser modificado por el usuario.
-- Al crear una propuesta, el servidor fija el estado, los votos, la meta y el creador.
-- Los **votos** son privados (cada usuario ve solo los suyos) y solo se aceptan en propuestas `En Votación`.
-- Un **paso** solo puede completarlo su responsable, con una evidencia válida del bucket; las transiciones de estado están restringidas.
-- El bucket de **evidencias** limita tipo y tamaño de archivo en el servidor.
-- El cliente usa únicamente la llave pública de Supabase; no hay claves secretas en el repositorio.
-
-## 🧪 Pruebas
-
-- **11 pruebas funcionales y de seguridad** ejecutadas con varias cuentas contra el proyecto real: escalada de privilegios, manipulación de propuestas, voto duplicado, aislamiento de votos, pasos ajenos, evidencia inválida, validación de archivos, estados automáticos y registro de usuarios. Resultados en [`docs/pruebasSeguridad.md`](docs/pruebasSeguridad.md).
-- **Pruebas unitarias** del cálculo de progreso: `npm test`.
-- **Linter** sin errores ni advertencias: `npm run lint`.
-
-## 🚀 Instalación y configuración
-
-```bash
-git clone https://github.com/gab0o06/RedCivica.git
-cd RedCivica
-npm install            # o pnpm install
-cp .env.example .env   # completa tus credenciales de Supabase
-npm run dev            # http://localhost:5173
-```
-
-Otros comandos: `npm run build`, `npm run lint`, `npm test`.
-
-**Variables de entorno**
-
-| Variable | Descripción |
-|---|---|
-| `VITE_SUPABASE_URL` | URL de la API del proyecto en Supabase (ej. `https://xxxx.supabase.co`) |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Llave pública (anon / publishable) de Supabase |
-
-**Base de datos:** ejecuta en el SQL Editor de Supabase, en este orden, los scripts de `supabase/migrations/`: `tablas.sql` → `rlsIniciales.sql` → `seguridad.sql` (y, opcional, `datosDemo.sql`). Crea además el bucket público `evidencias`. `reinicioDemo.sql` restablece los datos de la demo. No vuelvas a ejecutar `rlsIniciales.sql` sobre una base ya endurecida: restauraría las políticas vulnerables. En Authentication, desactiva "Confirm email" para la demo y configura la URL del sitio.
-
-## 🤖 Uso de IA generativa
-
-Se utilizaron herramientas de IA generativa durante el desarrollo; el equipo revisó, ejecutó y probó el resultado. La declaración completa (herramientas, partes con apoyo y partes propias) está en [`docs/declaracionIA.md`](docs/declaracionIA.md), conforme al Art. 12 del reglamento.
-
-## 🧭 Limitaciones y trabajo futuro
-
-**Limitaciones conocidas (versión del concurso)**
-
-- **Validación de sector:** el barrio del perfil es declarado por el vecino y hoy cualquier usuario registrado puede votar en cualquier barrio.
-- **Verificación de cuentas:** la confirmación de correo está desactivada para la demo, por lo que es posible crear cuentas múltiples.
-- **Rutas por tipo de trámite:** los pasos generados son los mismos para toda propuesta.
-- **Panel de administración y moderación:** el rol `admin` existe, pero aún no hay panel ni moderación previa a la votación.
-- **Visibilidad de datos:** los perfiles (nombre y barrio) y las evidencias son de lectura pública para mostrar responsables y soporte de cada paso.
-
-**Plan de mejora (no implementado)**
-
-1. **Voto por sector, sin pedir más datos.** Una política RLS que solo acepte el voto si `perfiles.barrio` coincide con el `barrio` de la propuesta. Usa un dato que ya existe y no recolecta información nueva.
-2. **Reducir la exposición de datos personales (minimización).**
-   - Mostrar un *alias* o nombre abreviado (ej. "María P.") en lugar del nombre completo, mediante una vista pública que solo expone ese campo y el barrio.
-   - Cerrar la lectura pública de `perfiles` y dejar a cada usuario ver solo su perfil completo.
-   - Evidencias en un bucket privado con URLs firmadas de corta duración, y recomendación en la interfaz de no subir rostros, documentos de identidad ni datos de terceros.
-   - Aviso de privacidad y consentimiento explícito en el registro.
-3. **Verificación del sector por terceros, sin guardar documentos.** Códigos de invitación emitidos por directivas barriales o por un administrador; el sistema solo guarda un indicador de "sector verificado", no la prueba de residencia.
-4. **Confirmación de correo** activada en producción y límite de tasa para el registro.
-5. **Biblioteca de guías por categoría** con versionado, y **dashboard para municipios y ONG**.
