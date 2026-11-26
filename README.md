@@ -83,7 +83,7 @@ Los barrios de Quito saben exactamente qué necesitan (luminarias, bacheo, segur
 ### Flujo de Activación Automática ("La Compuerta" a los 200 votos)
 
 <div align="center">
-  <img src="./assets/demo-compuerta.gif" width="280" alt="Demo del trigger automático al alcanzar 200 votos y desbloqueo de ruta de acción" />
+  <img src="./assets/demo-flujo.gif" width="280" alt="Demo del trigger automático al alcanzar 200 votos y desbloqueo de ruta de acción" />
   <p><em>Transición automática de <code>En Votación</code> a <code>En Gestión</code> mediante trigger en PostgreSQL y reclamo de paso colaborativo.</em></p>
 </div>
 
@@ -91,7 +91,7 @@ Los barrios de Quito saben exactamente qué necesitan (luminarias, bacheo, segur
 
 | Exploración y Filtros | Votación (1 Vecino = 1 Voto) | Ruta de Acción y Evidencia |
 | :---: | :---: | :---: |
-| <img src="./assets/screen-home.jpeg" width="230" alt="Feed de propuestas" /> | <img src="./assets/screen-voto.jpeg" width="230" alt="Detalle de propuesta y votación" /> | <img src="./assets/screen-ruta.jpeg" width="230" alt="Ruta de acción colaborativa" /> |
+| <img src="./assets/screen-home.jpg" width="230" alt="Feed de propuestas" /> | <img src="./assets/screen-voto.jpg" width="230" alt="Detalle de propuesta y votación" /> | <img src="./assets/screen-ruta.jpg" width="230" alt="Ruta de acción colaborativa" /> |
 
 ---
 
